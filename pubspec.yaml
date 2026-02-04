@@ -38,6 +38,7 @@ dependencies:
   flutter_svg: ^2.0.10 # library for SVG usage in the project
   provider: ^6.1.2 #library for State Management
   intl: ^0.20.2
+  firebase_auth: ^5.2.0
 
 dev_dependencies:
   flutter_test:
