@@ -61,18 +61,17 @@ class _SignupPageState extends State<SignupPage> {
       //create new user
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
 
       await userCredential.user?.updateDisplayName(_nameController.text.trim());
 
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => SuccessPage(
-              userName: _nameController.text.trim(),
-            ),
+            builder: (context) =>
+                SuccessPage(userName: _nameController.text.trim()),
           ),
         );
       }
@@ -171,10 +170,7 @@ class _SignupPageState extends State<SignupPage> {
 
                   const Text(
                     "Don't worry it's easy",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black54,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.black54),
                   ),
                   const SizedBox(height: 32),
 
@@ -313,10 +309,10 @@ class _SignupPageState extends State<SignupPage> {
                           onChanged: _isLoading
                               ? null
                               : (value) {
-                            setState(() {
-                              _agreeToTerms = value ?? false;
-                            });
-                          },
+                                  setState(() {
+                                    _agreeToTerms = value ?? false;
+                                  });
+                                },
                           activeColor: const Color(0xFF2196F3),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
@@ -368,26 +364,28 @@ class _SignupPageState extends State<SignupPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        disabledBackgroundColor:
-                        const Color(0xFF2196F3).withOpacity(0.6),
+                        disabledBackgroundColor: const Color(
+                          0xFF2196F3,
+                        ).withOpacity(0.6),
                       ),
                       child: _isLoading
                           ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                          AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
                           : const Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                              'Sign Up',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -395,21 +393,14 @@ class _SignupPageState extends State<SignupPage> {
                   Row(
                     children: [
                       const Expanded(
-                        child: Divider(
-                          color: Colors.grey,
-                          thickness: 0.5,
-                        ),
+                        child: Divider(color: Colors.grey, thickness: 0.5),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child:
-                        Text('or', style: TextStyle(color: Colors.grey)),
+                        child: Text('or', style: TextStyle(color: Colors.grey)),
                       ),
                       const Expanded(
-                        child: Divider(
-                          color: Colors.grey,
-                          thickness: 0.5,
-                        ),
+                        child: Divider(color: Colors.grey, thickness: 0.5),
                       ),
                     ],
                   ),
@@ -485,10 +476,7 @@ class _SignupPageState extends State<SignupPage> {
                     children: [
                       const Text(
                         'Have an account? ',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black87,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.black87),
                       ),
                       TextButton(
                         onPressed: _isLoading ? null : _handleSignIn,

@@ -25,10 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Sign Out',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Sign Out', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -109,7 +106,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         user?.displayName ?? 'User',

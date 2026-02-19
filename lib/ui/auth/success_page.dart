@@ -18,14 +18,9 @@ class SuccessPage extends StatelessWidget {
             children: [
               const Spacer(),
 
-              // Party Popper Emoji (or you can use an image/icon)
-              const Text(
-                '🎉',
-                style: TextStyle(fontSize: 100),
-              ),
+              const Text('🎉', style: TextStyle(fontSize: 100)),
               const SizedBox(height: 40),
 
-              // Success Title
               const Text(
                 'You Have Done!',
                 style: TextStyle(
@@ -52,16 +47,16 @@ class SuccessPage extends StatelessWidget {
 
               const Spacer(),
 
-              // Next Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Navigate to ProfilePage and remove all previous routes
                     Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => const ProfilePage()),
-                          (route) => false,
+                      MaterialPageRoute(
+                        builder: (context) => const ProfilePage(),
+                      ),
+                      (route) => false,
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -74,10 +69,7 @@ class SuccessPage extends StatelessWidget {
                   ),
                   child: const Text(
                     'Next',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
