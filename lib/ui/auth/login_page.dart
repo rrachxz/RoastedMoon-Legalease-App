@@ -1,73 +1,123 @@
-//signup
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:roastedmoon_legalease/ui/auth/login.dart';
+import 'package:roastedmoon_legalease/ui/auth/signup_page.dart';
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
-  final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _agreeToTerms = false;
+  bool _rememberMe = false;
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _nameController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
+  //sign in firebase
+  Future<void> _handleSignIn() async {
+    if (_emailController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty) {
+      _showErrorSnackBar('Please enter both email and password');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No user found with this email.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Wrong password provided.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Invalid email address.';
+          break;
+        case 'user-disabled':
+          errorMessage = 'This account has been disabled.';
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Too many attempts. Please try again later.';
+          break;
+        case 'invalid-credential':
+          errorMessage = 'Invalid email or password.';
+          break;
+        default:
+          errorMessage = 'Login failed: ${e.message}';
+      }
+
+      _showErrorSnackBar(errorMessage);
+
+    } catch (e) {
+      _showErrorSnackBar('An unexpected error occurred. Please try again.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  // error snackbar
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _handleGoogleSignIn() {
+    // TODO: Implement Google sign in
+    print('Google sign in');
+  }
+
+  void _handleAppleSignIn() {
+    // TODO: Implement Apple sign in
+    print('Apple sign in');
+  }
+
+  void _handleForgotPassword() {
+    // TODO: Implement forgot password
+    print('Forgot password');
+  }
+
   void _handleSignUp() {
-    // TODO: Implement email/password sign up
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
-      );
-      return;
-    }
-    if (!_agreeToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please agree to Terms of Service')),
-      );
-      return;
-    }
-    print('Email: ${_emailController.text}');
-    print('Name: ${_nameController.text}');
-    print('Password: ${_passwordController.text}');
-  }
-
-  void _handleGoogleSignUp() {
-    // TODO: Implement Google sign up
-    print('Google sign up');
-  }
-
-  void _handleFacebookSignUp() {
-    // TODO: Implement Facebook sign up
-    print('Facebook sign up');
-  }
-
-  void _handleSignIn() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
+      MaterialPageRoute(builder: (context) => const SignupPage()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -76,7 +126,6 @@ class _SignupPageState extends State<SignupPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  //logo
                   Container(
                     width: 56,
                     height: 56,
@@ -93,7 +142,7 @@ class _SignupPageState extends State<SignupPage> {
                   const SizedBox(height: 24),
 
                   const Text(
-                    'Sign Up',
+                    'Sign In',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -103,7 +152,7 @@ class _SignupPageState extends State<SignupPage> {
                   const SizedBox(height: 8),
 
                   const Text(
-                    "Don't worry it's easy",
+                    "Don't worry, it's easy!",
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black54,
@@ -111,10 +160,10 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  // input email
                   TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
+                    enabled: !_isLoading,
                     decoration: InputDecoration(
                       hintText: 'Enter Email',
                       hintStyle: const TextStyle(
@@ -135,34 +184,10 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // input name
-                  TextField(
-                    controller: _nameController,
-                    keyboardType: TextInputType.name,
-                    decoration: InputDecoration(
-                      hintText: 'Enter Name',
-                      hintStyle: const TextStyle(
-                        color: Colors.black26,
-                        fontSize: 14,
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[50],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // input pw
                   TextField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
+                    enabled: !_isLoading,
                     decoration: InputDecoration(
                       hintText: 'Enter Password',
                       hintStyle: const TextStyle(
@@ -195,105 +220,65 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 18),
 
-                  // confirm input pw
-                  TextField(
-                    controller: _confirmPasswordController,
-                    obscureText: _obscureConfirmPassword,
-                    decoration: InputDecoration(
-                      hintText: 'Re-enter Password',
-                      hintStyle: const TextStyle(
-                        color: Colors.black26,
-                        fontSize: 14,
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[50],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                          color: Colors.black26,
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // terms of service
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: Checkbox(
-                          value: _agreeToTerms,
-                          onChanged: (value) {
-                            setState(() {
-                              _agreeToTerms = value ?? false;
-                            });
-                          },
-                          activeColor: const Color(0xFF2196F3),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: Checkbox(
+                              value: _rememberMe,
+                              onChanged: _isLoading
+                                  ? null
+                                  : (value) {
+                                setState(() {
+                                  _rememberMe = value ?? false;
+                                });
+                              },
+                              activeColor: const Color(0xFF2196F3),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Remember me',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Wrap(
-                          children: [
-                            const Text(
-                              'I agree to the ',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const Text(
-                              'Legalease ',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Color(0xFF2196F3),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const Text(
-                              'Terms of Service and Privacy Policy',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ],
+                      TextButton(
+                        onPressed: _isLoading ? null : _handleForgotPassword,
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(0, 0),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF2196F3),
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
 
-                  //signup button
                   SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: _handleSignUp,
+                      onPressed: _isLoading ? null : _handleSignIn,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2196F3),
                         foregroundColor: Colors.white,
@@ -301,9 +286,19 @@ class _SignupPageState extends State<SignupPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        disabledBackgroundColor: const Color(0xFF2196F3).withOpacity(0.6),
                       ),
-                      child: const Text(
-                        'Sign Up',
+                      child: _isLoading
+                          ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                          : const Text(
+                        'Sign In',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -313,10 +308,9 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // divider
                   Row(
-                    children:[
-                      Expanded(
+                    children: [
+                      const Expanded(
                         child: Divider(
                           color: Colors.grey,
                           thickness: 0.5,
@@ -324,12 +318,9 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text('or',
-                            style: TextStyle(
-                                color: Colors.grey
-                            )),
+                        child: Text('or', style: TextStyle(color: Colors.grey)),
                       ),
-                      Expanded(
+                      const Expanded(
                         child: Divider(
                           color: Colors.grey,
                           thickness: 0.5,
@@ -339,12 +330,11 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // google sign up
                   SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: OutlinedButton.icon(
-                      onPressed: _handleGoogleSignUp,
+                      onPressed: _isLoading ? null : _handleGoogleSignIn,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.black87,
                         side: const BorderSide(
@@ -355,10 +345,13 @@ class _SignupPageState extends State<SignupPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      icon: const Icon(
-                        Icons.facebook,
-                        color: Color(0xFF1877F2),
-                        size: 20,
+                      icon: Image.network(
+                        'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+                        height: 20,
+                        width: 20,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.g_mobiledata, size: 20);
+                        },
                       ),
                       label: const Text(
                         'Continue with Google',
@@ -371,12 +364,11 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // fb sign up
                   SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: OutlinedButton.icon(
-                      onPressed: _handleFacebookSignUp,
+                      onPressed: _isLoading ? null : _handleAppleSignIn,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.black87,
                         side: const BorderSide(
@@ -388,12 +380,12 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                       ),
                       icon: const Icon(
-                        Icons.facebook,
-                        color: Color(0xFF1877F2),
+                        Icons.apple_outlined,
+                        color: Colors.black38,
                         size: 20,
                       ),
                       label: const Text(
-                        'Continue with Facebook',
+                        'Continue with Apple',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -403,26 +395,25 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  // sign in link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        'Have an account? ',
+                        "Don't have an account? ",
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.black87,
                         ),
                       ),
                       TextButton(
-                        onPressed: _handleSignIn,
+                        onPressed: _isLoading ? null : _handleSignUp,
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           minimumSize: const Size(0, 0),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: const Text(
-                          'Sign In',
+                          'Sign Up',
                           style: TextStyle(
                             fontSize: 14,
                             color: Color(0xFF2196F3),
