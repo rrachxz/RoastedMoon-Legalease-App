@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:roastedmoon_legalease/ui/home/home_page.dart';
 import 'package:roastedmoon_legalease/ui/profile/profile_page.dart';
 
 class SuccessPage extends StatelessWidget {
@@ -54,7 +55,7 @@ class SuccessPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                        builder: (context) => const ProfilePage(),
+                        builder: (context) => const HomePage(),
                       ),
                       (route) => false,
                     );
