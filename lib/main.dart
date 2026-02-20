@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:roastedmoon_legalease/ui/auth/login.dart';
 import 'firebase_options.dart';
 import 'ui/auth/login.dart';
+import 'package:roastedmoon_legalease/screens/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,13 +19,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Auth',
+      title: 'Legalease',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2196F3)),
-        useMaterial3: true,
+        brightness: Brightness.dark, // Makes the whole app dark mode
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: const Color(0xFF1E1E1E), // Matches your Figma
       ),
-      home: const LoginPage(),
+      home: const MainNavigation(),
     );
   }
 }

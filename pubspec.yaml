@@ -38,8 +38,13 @@ dependencies:
   flutter_svg: ^2.0.10 # library for SVG usage in the project
   provider: ^6.1.2 #library for State Management
   intl: ^0.20.2
-  firebase_auth: ^5.2.0
+  firebase_auth: ^6.1.4
   flutter_native_splash: ^2.4.7
+  google_fonts: ^8.0.2
+  file_picker: ^10.3.10       # For "Upload Document"
+  image_picker: ^1.0.7      # For "Scan with Camera"
+  url_launcher: ^6.2.5      # For "Scam Alerts" (Maps/Phone)
+  shared_preferences: ^2.2.2 # To save simple "History" list
 
 dev_dependencies:
   flutter_test:
