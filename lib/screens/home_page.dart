@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:roastedmoon_legalease/data/legal_terms.dart';
+import 'package:roastedmoon_legalease/screens/chat_history_page.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -18,7 +19,7 @@ class _MainNavigationState extends State<MainNavigation> {
   // 4 main screens from Figma
   static final List<Widget> _pages = [
     const HomeScreenContent(), 
-    const Center(child: Text('Chat Page', style: TextStyle(color: Colors.white))),
+    const ChatHistoryPage(),
     const Center(child: Text('Articles Page', style: TextStyle(color: Colors.white))),
     const Center(child: Text('Profile Page', style: TextStyle(color: Colors.white))),
   ];
