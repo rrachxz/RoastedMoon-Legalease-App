@@ -4,70 +4,18 @@ import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:roastedmoon_legalease/data/legal_terms.dart';
-import 'package:roastedmoon_legalease/screens/chat_history_page.dart';
 
-class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
-
-  @override
-  State<MainNavigation> createState() => _MainNavigationState();
-}
-
-class _MainNavigationState extends State<MainNavigation> {
-  int _selectedIndex = 0;
-
-  // 4 main screens from Figma
-  static final List<Widget> _pages = [
-    const HomeScreenContent(), 
-    const ChatHistoryPage(),
-    const Center(child: Text('Articles Page', style: TextStyle(color: Colors.white))),
-    const Center(child: Text('Profile Page', style: TextStyle(color: Colors.white))),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: const Color(0xFF1E1E1E),
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), label: 'Chat'),
-          BottomNavigationBarItem(icon: Icon(Icons.article_outlined), label: 'Articles'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
-        ],
-      ),
-    );
-  }
-}
 
 class HomeScreenContent extends StatelessWidget {
   const HomeScreenContent({super.key});
 
-  // --- SAVE TO HISTORY ---
   Future<void> _saveToHistory(String fileName) async {
     final prefs = await SharedPreferences.getInstance();
-    // Get existing list or empty list if it doesn't exist
     List<String> history = prefs.getStringList('upload_history') ?? [];
-    history.insert(0, fileName); // Add new file at the top
+    history.insert(0, fileName);
     await prefs.setStringList('upload_history', history);
   }
 
-  // --- UPLOAD DOCUMENT ---
   Future<void> _pickDocument(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -76,31 +24,25 @@ class HomeScreenContent extends StatelessWidget {
 
     if (result != null) {
       String fileName = result.files.first.name;
-      await _saveToHistory(fileName); // Save it!
+      await _saveToHistory(fileName);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Uploaded: $fileName (Saved to History)")),
+          SnackBar(content: Text("Uploaded: $fileName")),
         );
       }
     }
   }
 
-  // --- SCAN WITH CAMERA ---
   Future<void> _scanWithCamera() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.camera);
     if (image != null) {
       await _saveToHistory("Scan_${DateTime.now().millisecond}.jpg");
-
-      // CALL AI CHAT FUNCTION HERE
-
       print("Document Scanned: ${image.path}");
     }
   }
 
-  // --- SCAM ALERTS (Maps Search) ---
   Future<void> _contactLawCenter() async {
-    // This searches Google Maps for "Legal Aid" near the user
     final Uri url = Uri.parse('https://www.google.com/maps/search/legal+aid+office/');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch maps');
@@ -108,16 +50,16 @@ class HomeScreenContent extends StatelessWidget {
   }
 
   final String userName = "Bulan Gosong";
+  
   @override
   Widget build(BuildContext context) {
-    // Use SafeArea directly, NO Scaffold here
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Header (Dynamic Name)
+            // 1. Header (Black text for light mode)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -125,51 +67,60 @@ class HomeScreenContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text("Welcome,", style: TextStyle(color: Colors.grey)),
-                    Text(userName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
+                    Text(userName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black)),
                   ],
                 ),
-                CircleAvatar(backgroundColor: Colors.blueGrey, radius: 24, child: Icon(Icons.person, color: Colors.white)),
+                const CircleAvatar(backgroundColor: Color(0xFFD9D9D9), radius: 24, child: Icon(Icons.person, color: Colors.white)),
               ],
             ),
             const SizedBox(height: 30),
 
             // 2. Upload Card
-            Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(colors: [Colors.blue, Colors.lightBlueAccent]),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                children: [
-                  ListTile(
-                    onTap: () => _pickDocument(context),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 25),
-                    title: const Icon(Icons.cloud_upload_outlined, size: 45, color: Colors.white),
-                    subtitle: const Text("Upload Document", 
-                      textAlign: TextAlign.center, 
-                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16)),
+            GestureDetector(
+              onTap: () => _pickDocument(context),
+              child: Container(
+                width: double.infinity,
+                height: 140,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF0086FF), Color(0xFF5AB2FF)],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
                   ),
-                  const Divider(color: Colors.white24, height: 1),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: ElevatedButton.icon(
-                      onPressed: _scanWithCamera,
-                      icon: const Icon(Icons.camera_alt),
-                      label: const Text("Scan with Camera"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white.withValues(alpha: 0.2),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                      ),
-                    ),
-                  )
-                ],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.upload_file, color: Colors.white, size: 35),
+                    SizedBox(height: 8),
+                    Text("Upload Document", 
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // 3. SEPARATE Scan with Camera Button
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _scanWithCamera,
+                icon: const Icon(Icons.camera_alt_outlined, size: 20),
+                label: const Text("Scan with Camera"),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF0086FF),
+                  side: const BorderSide(color: Color(0xFFD9D9D9)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
               ),
             ),
             const SizedBox(height: 35),
 
-            // 3. Quick Actions Grid
-            const Text("Quick Actions", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+            // 4. Quick Actions Grid
+            const Text("Quick Actions", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
             const SizedBox(height: 15),
             GridView.count(
               shrinkWrap: true,
@@ -178,13 +129,13 @@ class HomeScreenContent extends StatelessWidget {
               crossAxisSpacing: 15,
               mainAxisSpacing: 15,
               children: [
-                _buildActionCard("My Documents", Icons.description, () {
+                _buildActionCard(context, "My Documents", Icons.description, () {
                    Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryPage()));
                 }),
-                _buildActionCard("Jargon Decoder", Icons.search, () {
+                _buildActionCard(context, "Jargon Decoder", Icons.search, () {
                   showSearch(context: context, delegate: JargonSearchDelegate());
                 }),
-                _buildActionCard("Legal Aid", Icons.gavel, _contactLawCenter),
+                _buildActionCard(context, "Legal Aid", Icons.gavel, _contactLawCenter),
               ],
             ),
           ],
@@ -193,21 +144,33 @@ class HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildActionCard(String title, IconData icon, VoidCallback onTap) {
+  Widget _buildActionCard(BuildContext context, String title, IconData icon, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(15),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue.withValues(alpha: 0.4)),
+          color: Colors.white,
+          border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.2)),
           borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.blue, size: 32),
+            Icon(icon, color: Theme.of(context).primaryColor, size: 32),
             const SizedBox(height: 10),
-            Text(title, style: const TextStyle(fontSize: 13, color: Colors.white)),
+            Text(
+              title,
+              textAlign: TextAlign.center, 
+              style: TextStyle(
+                fontSize: 14, 
+                color: Theme.of(context).primaryColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
       ),
@@ -216,18 +179,10 @@ class HomeScreenContent extends StatelessWidget {
 }
 
 class JargonSearchDelegate extends SearchDelegate {
-
   @override
   ThemeData appBarTheme(BuildContext context) {
-    return ThemeData(
-      appBarTheme: const AppBarTheme(backgroundColor: Color(0xFF1E1E1E)),
-      inputDecorationTheme: const InputDecorationTheme(
-        hintStyle: TextStyle(color: Colors.grey),
-      ),
-      textTheme: const TextTheme(
-        titleLarge: TextStyle(color: Colors.white), // The text you type
-      ),
-    );
+    // Inherits automatically from your white main.dart theme
+    return Theme.of(context);
   }
 
   @override
@@ -241,22 +196,20 @@ class JargonSearchDelegate extends SearchDelegate {
         onPressed: () => close(context, null),
       );
 
-  // 2. THIS IS THE "DECODER" RESULT SCREEN
   @override
   Widget buildResults(BuildContext context) {
     final definition = legalDictionary[query] ?? "Definition not found.";
-    
     return Container(
-      color: const Color(0xFF1E1E1E),
+      color: Colors.white,
       padding: const EdgeInsets.all(25),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(query, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blue)),
           const SizedBox(height: 15),
-          const Divider(color: Colors.grey),
+          const Divider(),
           const SizedBox(height: 15),
-          Text(definition, style: const TextStyle(fontSize: 18, color: Colors.white, height: 1.5)),
+          Text(definition, style: const TextStyle(fontSize: 18, color: Colors.black87, height: 1.5)),
         ],
       ),
     );
@@ -264,18 +217,17 @@ class JargonSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    // Filter keys from the dictionary
     final suggestions = legalDictionary.keys
         .where((term) => term.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return Container(
-      color: const Color(0xFF1E1E1E),
+      color: Colors.white,
       child: ListView.builder(
         itemCount: suggestions.length,
         itemBuilder: (context, i) => ListTile(
-          title: Text(suggestions[i], style: const TextStyle(color: Colors.white)),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+          title: Text(suggestions[i], style: const TextStyle(color: Colors.black)),
+          trailing: const Icon(Icons.arrow_forward_ios, size: 14),
           onTap: () {
             query = suggestions[i];
             showResults(context);
@@ -312,15 +264,15 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("My Documents"), backgroundColor: const Color(0xFF1E1E1E)),
-      backgroundColor: const Color(0xFF1E1E1E),
+      appBar: AppBar(title: const Text("My Documents")), // Now automatically white
       body: _history.isEmpty
           ? const Center(child: Text("No documents yet", style: TextStyle(color: Colors.grey)))
           : ListView.builder(
+              padding: const EdgeInsets.all(16),
               itemCount: _history.length,
               itemBuilder: (context, index) => ListTile(
                 leading: const Icon(Icons.insert_drive_file, color: Colors.blue),
-                title: Text(_history[index], style: const TextStyle(color: Colors.white)),
+                title: Text(_history[index], style: const TextStyle(color: Colors.black)),
                 subtitle: const Text("Tap to view", style: TextStyle(color: Colors.grey, fontSize: 12)),
               ),
             ),

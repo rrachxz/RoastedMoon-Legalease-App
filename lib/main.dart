@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:roastedmoon_legalease/ui/auth/login.dart';
 import 'firebase_options.dart';
 import 'ui/auth/login.dart';
-import 'package:roastedmoon_legalease/screens/home_page.dart';
+import 'package:roastedmoon_legalease/navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,9 +22,18 @@ class MyApp extends StatelessWidget {
       title: 'Legalease',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark, // Makes the whole app dark mode
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: const Color(0xFF1E1E1E), // Matches your Figma
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: Colors.white, // Pure white background
+        primaryColor: const Color(0xFF0086FF), // Your Figma blue
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.black),
+          bodyMedium: TextStyle(color: Colors.black87),
+        ),
       ),
       home: const MainNavigation(),
     );

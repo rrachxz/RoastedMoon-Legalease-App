@@ -45,6 +45,7 @@ dependencies:
   image_picker: ^1.0.7      # For "Scan with Camera"
   url_launcher: ^6.2.5      # For "Scam Alerts" (Maps/Phone)
   shared_preferences: ^2.2.2 # To save simple "History" list
+  http: ^1.2.0
 
 dev_dependencies:
   flutter_test:
