@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:roastedmoon_legalease/ui/home/home_page.dart';
-import 'package:roastedmoon_legalease/ui/profile/profile_page.dart';
+import 'package:roastedmoon_legalease/ui/main/home_page.dart';
 
 class SuccessPage extends StatelessWidget {
   final String? userName;

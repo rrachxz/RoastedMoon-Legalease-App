@@ -119,7 +119,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Upload Document button
   Widget _buildUploadButton() {
     return Container(
       width: double.infinity,
@@ -165,7 +164,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildScanButton() {
     return Container(
       width: double.infinity,
-      height: 56,
+      height: 50,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(28),
@@ -247,7 +246,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(width: 16),
-            const Expanded(child: SizedBox()), // Empty space
+            const Expanded(child: SizedBox()),
           ],
         ),
       ],
