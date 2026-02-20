@@ -71,7 +71,6 @@ class BottomNav extends StatelessWidget {
             label: 'Profile',
           ),
         ],
-
         currentIndex: selectedIndex,
         selectedItemColor: activeColor,
         unselectedItemColor: inactiveColor,
