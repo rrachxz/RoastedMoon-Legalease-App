@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:file_picker/file_picker.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,6 +12,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser;
 
+  //get user's first name
   String _getFirstName() {
     if (user?.displayName != null && user!.displayName!.isNotEmpty) {
       return user!.displayName!.split(' ').first;
@@ -18,6 +20,7 @@ class _HomePageState extends State<HomePage> {
     return 'User';
   }
 
+  //get user's initials
   String _getInitials() {
     if (user?.displayName != null && user!.displayName!.isNotEmpty) {
       List<String> names = user!.displayName!.split(' ');
@@ -29,9 +32,64 @@ class _HomePageState extends State<HomePage> {
     return user?.email?[0].toUpperCase() ?? 'U';
   }
 
-  void _handleUploadDocument() {
-    print('Upload Document clicked');
-    // TODO: Implement upload document
+  //upload documents
+  Future<void> _handleUploadDocument() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc', 'docx'],
+      );
+
+      if (result != null) {
+        String fileName = result.files.first.name;
+        int fileSize = result.files.first.size;
+
+        _showSuccessMessage(fileName, fileSize);
+
+        // TODO: Upload to Firebase Storage
+        print('File picked: $fileName');
+      } else {
+        print('No file selected');
+      }
+    } catch (e) {
+      _showErrorMessage('Failed to pick file');
+      print('Error: $e');
+    }
+  }
+
+  //success message
+  void _showSuccessMessage(String fileName, int fileSize) {
+    String size = _formatFileSize(fileSize);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('✓ $fileName uploaded ($size)'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  //error message
+  void _showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  //file size
+  String _formatFileSize(int bytes) {
+    if (bytes < 1024) {
+      return '$bytes B';
+    } else if (bytes < 1024 * 1024) {
+      return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    } else {
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
   }
 
   void _handleScanWithCamera() {
@@ -127,10 +185,7 @@ class _HomePageState extends State<HomePage> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF2196F3),
-            Color(0xFF00BCD4),
-          ],
+          colors: [Color(0xFF2196F3), Color(0xFF00BCD4)],
         ),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -179,7 +234,11 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
-                Icon(Icons.camera_alt_outlined, color: Color(0xFF2196F3), size: 20),
+                Icon(
+                  Icons.camera_alt_outlined,
+                  color: Color(0xFF2196F3),
+                  size: 20,
+                ),
                 SizedBox(width: 8),
                 Text(
                   'Scan with Camera',
@@ -265,7 +324,7 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Color(0xFF2196F3), width: 1.5),
+        border: Border.all(color: const Color(0xFF2196F3), width: 1.5),
       ),
       child: Material(
         color: Colors.transparent,
@@ -291,10 +350,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.black54,
-                  ),
+                  style: const TextStyle(fontSize: 11, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
               ],
