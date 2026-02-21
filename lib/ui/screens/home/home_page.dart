@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:roastedmoon_legalease/ui/screens/home/doc_analysis_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -44,10 +45,16 @@ class _HomePageState extends State<HomePage> {
         String fileName = result.files.first.name;
         int fileSize = result.files.first.size;
 
-        _showSuccessMessage(fileName, fileSize);
-
-        // TODO: Upload to Firebase Storage
-        print('File picked: $fileName');
+        // Navigate to analysis page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DocumentAnalysisPage(
+              fileName: fileName,
+              fileSize: fileSize,
+            ),
+          ),
+        );
       } else {
         print('No file selected');
       }
@@ -55,19 +62,6 @@ class _HomePageState extends State<HomePage> {
       _showErrorMessage('Failed to pick file');
       print('Error: $e');
     }
-  }
-
-  //success message
-  void _showSuccessMessage(String fileName, int fileSize) {
-    String size = _formatFileSize(fileSize);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('✓ $fileName uploaded ($size)'),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 3),
-      ),
-    );
   }
 
   //error message
@@ -79,17 +73,6 @@ class _HomePageState extends State<HomePage> {
         duration: const Duration(seconds: 2),
       ),
     );
-  }
-
-  //file size
-  String _formatFileSize(int bytes) {
-    if (bytes < 1024) {
-      return '$bytes B';
-    } else if (bytes < 1024 * 1024) {
-      return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    } else {
-      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-    }
   }
 
   void _handleScanWithCamera() {
@@ -223,7 +206,7 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: const Color(0xFF2196F3), width: 2),
+        border: Border.all(color: const Color(0xFF2196F3), width: 1.5),
       ),
       child: Material(
         color: Colors.transparent,
