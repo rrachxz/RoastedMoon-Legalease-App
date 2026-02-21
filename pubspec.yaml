@@ -46,6 +46,7 @@ dependencies:
   url_launcher: ^6.2.5      # For "Scam Alerts" (Maps/Phone)
   shared_preferences: ^2.2.2 # To save simple "History" list
   http: ^1.2.0
+  firebase_core: ^4.4.0
 
 dev_dependencies:
   flutter_test:

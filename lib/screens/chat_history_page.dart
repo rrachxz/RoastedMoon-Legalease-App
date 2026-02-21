@@ -14,11 +14,17 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
     {"title": "NDA Explanation", "document": "startup_nda.pdf", "time": "Feb 15"},
   ];
 
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Filter the list based on what the user types in the search bar
     final filteredChats = _allChats
         .where((chat) => chat['title']!.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
@@ -37,35 +43,55 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
         child: Column(
           children: [
             const SizedBox(height: 10),
-            
-            // --- ROUNDED SEARCH BAR ---
+
+            // --- SEARCH BAR ---
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5), // Light grey background
+                color: const Color(0xFFF5F5F5),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: TextField(
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value;
-                  });
-                },
-                decoration: const InputDecoration(
+                controller: _searchController,
+                onChanged: (value) => setState(() => _searchQuery = value),
+                decoration: InputDecoration(
                   hintText: "Search your chats...",
-                  hintStyle: TextStyle(color: Colors.grey),
-                  prefixIcon: Icon(Icons.search, color: Color(0xFF0086FF)),
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  prefixIcon: const Icon(Icons.search, color: Color(0xFF0086FF)),
+                  // FIX: show clear button only when there's text
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, color: Colors.grey),
+                          onPressed: () => setState(() {
+                            _searchController.clear();
+                            _searchQuery = "";
+                          }),
+                        )
+                      : null,
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 15),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 15),
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 25),
 
             // --- CHAT LIST ---
             Expanded(
               child: filteredChats.isEmpty
-                  ? const Center(child: Text("No chats found", style: TextStyle(color: Colors.grey)))
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.chat_bubble_outline,
+                              size: 52, color: Colors.grey.shade300),
+                          const SizedBox(height: 12),
+                          const Text(
+                            "No chats found",
+                            style: TextStyle(color: Colors.grey, fontSize: 15),
+                          ),
+                        ],
+                      ),
+                    )
                   : ListView.builder(
                       itemCount: filteredChats.length,
                       itemBuilder: (context, index) {
@@ -75,26 +101,31 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(15),
-                            border: Border.all(color: const Color(0xFF0086FF).withOpacity(0.15)),
+                            // FIX: withOpacity() deprecated → withValues(alpha:)
+                            border: Border.all(
+                              color: const Color(0xFF0086FF).withValues(alpha: 0.15),
+                            ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.02),
+                                color: Colors.black.withValues(alpha: 0.02),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
-                              )
+                              ),
                             ],
                           ),
                           child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
                             leading: const CircleAvatar(
                               backgroundColor: Color(0xFFE3F2FD),
-                              child: Icon(Icons.chat_bubble_outline, color: Color(0xFF0086FF), size: 20),
+                              child: Icon(Icons.chat_bubble_outline,
+                                  color: Color(0xFF0086FF), size: 20),
                             ),
                             title: Text(
                               chat['title']!,
                               style: const TextStyle(
-                                color: Color(0xFF0086FF), // Blue text
-                                fontWeight: FontWeight.bold, // Bold text
+                                color: Color(0xFF0086FF),
+                                fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
                             ),
@@ -102,12 +133,14 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
                               padding: const EdgeInsets.only(top: 4.0),
                               child: Text(
                                 "File: ${chat['document']}",
-                                style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                                style: TextStyle(
+                                    color: Colors.grey[600], fontSize: 13),
                               ),
                             ),
                             trailing: Text(
                               chat['time']!,
-                              style: const TextStyle(color: Colors.grey, fontSize: 11),
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 11),
                             ),
                             onTap: () {
                               // Connect to Chat View logic here
