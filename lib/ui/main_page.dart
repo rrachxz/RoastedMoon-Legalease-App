@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:roastedmoon_legalease/ui/main/components/bottom_nav.dart';
-import 'package:roastedmoon_legalease/ui/main/home_page.dart';
-import 'package:roastedmoon_legalease/ui/main/chat_page.dart';
-import 'package:roastedmoon_legalease/ui/main/articles_page.dart';
-import 'package:roastedmoon_legalease/ui/main/profile_page.dart';
+import 'package:roastedmoon_legalease/ui/screens/components/bottom_nav.dart';
+import 'package:roastedmoon_legalease/ui/screens/home/home_page.dart';
+import 'package:roastedmoon_legalease/ui/screens/chat_page.dart';
+import 'package:roastedmoon_legalease/ui/screens/articles_page.dart';
+import 'package:roastedmoon_legalease/ui/screens/profile_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
