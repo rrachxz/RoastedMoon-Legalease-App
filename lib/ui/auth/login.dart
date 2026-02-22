@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:roastedmoon_legalease/ui/auth/signup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,11 +23,31 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _handleSignIn() {
-    // TODO: Implement email/password sign in
-    print('Email: ${_emailController.text}');
-    print('Password: ${_passwordController.text}');
+  void _handleSignIn() async {
+  try {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    }
+  } on FirebaseAuthException catch (e) {
+    String message = 'An error occurred';
+    if (e.code == 'user-not-found') message = 'No user found for that email.';
+    else if (e.code == 'wrong-password') message = 'Wrong password provided.';
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  } catch (e) {
+    print('Sign in error: $e');
   }
+}
 
   void _handleGoogleSignIn() {
     // TODO: Implement Google sign in

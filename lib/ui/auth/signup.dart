@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:roastedmoon_legalease/ui/auth/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../home.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -28,23 +30,50 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
   }
 
-  void _handleSignUp() {
-    // TODO: Implement email/password sign up
+  void _handleSignUp() async {
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Passwords do not match')),
       );
       return;
     }
+    
     if (!_agreeToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please agree to Terms of Service')),
       );
       return;
     }
-    print('Email: ${_emailController.text}');
-    print('Name: ${_nameController.text}');
-    print('Password: ${_passwordController.text}');
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'An error occurred. Please try again.';
+      if (e.code == 'weak-password') {
+        errorMessage = 'The password provided is too weak.';
+      } else if (e.code == 'email-already-in-use') {
+        errorMessage = 'The account already exists for that email.';
+      }
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    } catch (e) {
+      print('Signup error: $e');
+      print('Email: ${_emailController.text}');
+      print('Name: ${_nameController.text}');
+      print('Password: ${_passwordController.text}');
+    }
   }
 
   void _handleGoogleSignUp() {
