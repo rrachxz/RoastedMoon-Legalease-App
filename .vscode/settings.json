@@ -1,3 +1,5 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "cmake.sourceDirectory": "C:/Projects/RoastedMoon-Legalease-App/linux",
+    "java.compile.nullAnalysis.mode": "disabled"
 }

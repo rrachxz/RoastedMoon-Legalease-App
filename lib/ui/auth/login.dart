@@ -51,17 +51,61 @@ class _LoginPageState extends State<LoginPage> {
 
   void _handleGoogleSignIn() {
     // TODO: Implement Google sign in
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    }
     print('Google sign in');
   }
 
   void _handleFacebookSignIn() {
     // TODO: Implement Facebook sign in
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    }
     print('Facebook sign in');
   }
 
-  void _handleForgotPassword() {
-    // TODO: Implement forgot password
-    print('Forgot password');
+  void _handleForgotPassword() async {
+    if (_emailController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your email address.')),
+      );
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: _emailController.text.trim(),
+      );
+      
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Reset Email Sent'),
+            content: Text(
+              'A password reset link has been sent to ${_emailController.text}. Please check your inbox.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? 'An error occurred')),
+      );
+    }
   }
 
   void _handleSignUp() {

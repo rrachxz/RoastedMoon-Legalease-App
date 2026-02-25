@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "165338588203",
-    "project_id": "roastedmoon",
-    "storage_bucket": "roastedmoon.firebasestorage.app"
+    "project_number": "247222841766",
+    "project_id": "legalease-67f6f",
+    "storage_bucket": "legalease-67f6f.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:165338588203:android:dd4dcb87c18a6acd46b66e",
+        "mobilesdk_app_id": "1:247222841766:android:5027e673c6397c272edf67",
         "android_client_info": {
           "package_name": "com.roastedmoon.roastedmoon_legalease"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "247222841766-f78jvfh0acdqu3er5cfvn2gaqferim0l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.roastedmoon.roastedmoon_legalease",
+            "certificate_hash": "74c8faedde78e21e615ef28ecc1c7fe42c576383"
+          }
+        },
+        {
+          "client_id": "247222841766-ifaup4ob35856vi84c4rr4slesfaodnp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDSeEOB8uzoTYdVX3LgWpuLaMSGiobnPS4"
+          "current_key": "AIzaSyAlLNkR0cEEdCMrLeKSnCtnf3wV3bGBnA0"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "247222841766-ifaup4ob35856vi84c4rr4slesfaodnp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

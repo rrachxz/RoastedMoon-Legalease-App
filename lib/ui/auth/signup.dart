@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:roastedmoon_legalease/ui/auth/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../home.dart';
+import 'success_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -54,7 +55,7 @@ class _SignupPageState extends State<SignupPage> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const SuccessPage()),
         );
       }
     } on FirebaseAuthException catch (e) {
@@ -78,11 +79,23 @@ class _SignupPageState extends State<SignupPage> {
 
   void _handleGoogleSignUp() {
     // TODO: Implement Google sign up
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    }
     print('Google sign up');
   }
 
   void _handleFacebookSignUp() {
     // TODO: Implement Facebook sign up
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    }
     print('Facebook sign up');
   }
 
