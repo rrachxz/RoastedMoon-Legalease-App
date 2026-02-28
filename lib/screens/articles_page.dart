@@ -110,7 +110,6 @@ class _ArticlesPageState extends State<ArticlesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search bar
             Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
@@ -144,7 +143,6 @@ class _ArticlesPageState extends State<ArticlesPage> {
               ),
             ),
 
-            // Section label
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 14),
               child: Text(
@@ -158,7 +156,6 @@ class _ArticlesPageState extends State<ArticlesPage> {
               ),
             ),
 
-            // Articles list
             Expanded(
               child: _isLoading
                   ? const Center(
@@ -205,9 +202,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
         ],
       ),
       child: InkWell(
-        onTap: () {
-          // Navigate to full article URL
-        },
+        onTap: () {},
         borderRadius: BorderRadius.circular(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
