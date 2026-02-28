@@ -1,3 +1,5 @@
+![legalease_banner](https://github.com/user-attachments/assets/26191472-5a1e-40b7-88c7-b2adc3ddd374)
+
 # Legalease
 Bridging the Legal Literacy Gap. Legalease is an AI-powered application designed to protect elderly communities and vulnerable groups from digital contract scams and predatory terms.
 
