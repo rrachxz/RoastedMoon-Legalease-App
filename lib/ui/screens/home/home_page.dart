@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:roastedmoon_legalease/ui/screens/home/doc_analysis_page.dart';
+import 'package:roastedmoon_legalease/ui/screens/home/decoder/jargon_decoder.dart';
+import 'package:roastedmoon_legalease/ui/screens/home/document/my_documents.dart';
+import 'package:roastedmoon_legalease/ui/screens/home/analysis/doc_analysis_page.dart';
+import 'package:roastedmoon_legalease/ui/screens/home/scam/scam_alerts.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,7 +16,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser;
 
-  //get user's first name
   String _getFirstName() {
     if (user?.displayName != null && user!.displayName!.isNotEmpty) {
       return user!.displayName!.split(' ').first;
@@ -21,10 +23,9 @@ class _HomePageState extends State<HomePage> {
     return 'User';
   }
 
-  //get user's initials
   String _getInitials() {
     if (user?.displayName != null && user!.displayName!.isNotEmpty) {
-      List<String> names = user!.displayName!.split(' ');
+      final names = user!.displayName!.split(' ');
       if (names.length >= 2) {
         return '${names[0][0]}${names[1][0]}'.toUpperCase();
       }
@@ -33,39 +34,41 @@ class _HomePageState extends State<HomePage> {
     return user?.email?[0].toUpperCase() ?? 'U';
   }
 
-  //upload documents
   Future<void> _handleUploadDocument() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx'],
       );
 
       if (result != null) {
-        String fileName = result.files.first.name;
-        int fileSize = result.files.first.size;
+        final fileName = result.files.first.name;
+        final fileSize = result.files.first.size;
+        final fileBytes = result.files.first.bytes;
+        final filePath = result.files.first.path;
 
-        // Navigate to analysis page
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DocumentAnalysisPage(
-              fileName: fileName,
-              fileSize: fileSize,
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DocumentAnalysisPage(
+                fileName: fileName,
+                fileSize: fileSize,
+                filePath: filePath,
+                fileBytes: fileBytes,
+              ),
             ),
-          ),
-        );
-      } else {
-        print('No file selected');
+          );
+        }
       }
     } catch (e) {
-      _showErrorMessage('Failed to pick file');
-      print('Error: $e');
+      _showErrorMessage('Failed to select file. Please try again.');
     }
   }
 
-  //error message
   void _showErrorMessage(String message) {
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -73,26 +76,6 @@ class _HomePageState extends State<HomePage> {
         duration: const Duration(seconds: 2),
       ),
     );
-  }
-
-  void _handleScanWithCamera() {
-    print('Scan with Camera clicked');
-    // TODO: Implement camera scan
-  }
-
-  void _handleMyDocuments() {
-    print('My Documents clicked');
-    // TODO: Navigate to documents page
-  }
-
-  void _handleJargonDecoder() {
-    print('Jargon Decoder clicked');
-    // TODO: Navigate to jargon decoder
-  }
-
-  void _handleScamAlerts() {
-    print('Scam Alerts clicked');
-    // TODO: Navigate to scam alerts
   }
 
   @override
@@ -206,12 +189,12 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: const Color(0xFF2196F3), width: 1.5),
+        border: Border.all(color: const Color(0xFF2196F3), width: 2),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: _handleScanWithCamera,
+          onTap: () {}, // TODO: Implement camera scan
           borderRadius: BorderRadius.circular(28),
           child: Center(
             child: Row(
@@ -259,8 +242,14 @@ class _HomePageState extends State<HomePage> {
                 icon: Icons.description,
                 title: 'My Documents',
                 subtitle: 'History',
-                color: const Color(0xFF2196F3),
-                onTap: _handleMyDocuments,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyDocumentsPage(),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(width: 16),
@@ -269,8 +258,14 @@ class _HomePageState extends State<HomePage> {
                 icon: Icons.search,
                 title: 'Jargon Decoder',
                 subtitle: 'Quick word search',
-                color: const Color(0xFF2196F3),
-                onTap: _handleJargonDecoder,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const JargonDecoderPage(),
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -283,8 +278,14 @@ class _HomePageState extends State<HomePage> {
                 icon: Icons.warning_amber_rounded,
                 title: 'Scam Alerts',
                 subtitle: 'Fraud Warnings',
-                color: const Color(0xFF2196F3),
-                onTap: _handleScamAlerts,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ScamAlertsPage(),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(width: 16),
@@ -299,7 +300,6 @@ class _HomePageState extends State<HomePage> {
     required IconData icon,
     required String title,
     required String subtitle,
-    required Color color,
     required VoidCallback onTap,
   }) {
     return Container(
@@ -319,14 +319,14 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, color: color, size: 32),
+                Icon(icon, color: const Color(0xFF2196F3), size: 32),
                 const SizedBox(height: 8),
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: color,
+                    color: Color(0xFF2196F3),
                   ),
                   textAlign: TextAlign.center,
                 ),
