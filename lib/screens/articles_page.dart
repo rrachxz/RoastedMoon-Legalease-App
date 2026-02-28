@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:developer' as developer;
@@ -34,16 +35,29 @@ class _ArticlesPageState extends State<ArticlesPage> {
       _hasError = false;
     });
 
-    const apiKey = '010005c2b57b497f818cf4b0e11efdfc';
+    final apiKey = dotenv.env['NEWS_API_KEY'];
 
-    String legalKeywords = '(law OR legal OR "cyber security" OR scam OR "consumer rights")';
-    String finalQuery = customQuery != null
+    if (apiKey == null || apiKey.isEmpty) {
+      developer.log('NEWS_API_KEY not found in .env', name: 'ArticlesPage');
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+      });
+      return;
+    }
+
+    const String legalKeywords =
+        '(law OR legal OR "cyber security" OR scam OR "consumer rights")';
+    final String finalQuery = customQuery != null
         ? '$customQuery AND $legalKeywords'
         : legalKeywords;
 
-    String trustedDomains = 'reuters.com,apnews.com,theverge.com,wired.com,justice.gov';
+    const String trustedDomains =
+        'reuters.com,apnews.com,theverge.com,wired.com,justice.gov';
 
-    final url = 'https://newsapi.org/v2/everything?'
+    final url =
+        'https://newsapi.org/v2/everything?'
         'q=${Uri.encodeComponent(finalQuery)}'
         '&domains=$trustedDomains'
         '&language=en'
@@ -66,7 +80,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
         });
       }
     } catch (e) {
-      developer.log("Error fetching news: $e", name: 'ArticlesPage');
+      developer.log('Error fetching news: $e', name: 'ArticlesPage');
       if (!mounted) return;
       setState(() {
         _isLoading = false;
@@ -83,7 +97,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          "Articles",
+          'Articles',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24,
@@ -96,7 +110,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- SEARCH BAR ---
+            // Search bar
             Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
@@ -111,9 +125,12 @@ class _ArticlesPageState extends State<ArticlesPage> {
                   }
                 },
                 decoration: InputDecoration(
-                  hintText: "Search legal news...",
+                  hintText: 'Search legal news...',
                   hintStyle: TextStyle(color: Colors.grey.shade400),
-                  prefixIcon: const Icon(Icons.search, color: Color(0xFF0086FF)),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: Color(0xFF0086FF),
+                  ),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.clear, color: Colors.grey),
                     onPressed: () {
@@ -127,11 +144,11 @@ class _ArticlesPageState extends State<ArticlesPage> {
               ),
             ),
 
-            // --- SECTION LABEL ---
+            // Section label
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 14),
               child: Text(
-                "Latest Legal News",
+                'Latest Legal News',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -141,21 +158,23 @@ class _ArticlesPageState extends State<ArticlesPage> {
               ),
             ),
 
-            // --- ARTICLES LIST ---
+            // Articles list
             Expanded(
               child: _isLoading
                   ? const Center(
-                      child: CircularProgressIndicator(color: Color(0xFF0086FF)),
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF0086FF),
+                      ),
                     )
                   : _hasError
-                      ? _buildErrorState()
-                      : _articles.isEmpty
-                          ? _buildEmptyState()
-                          : ListView.builder(
-                              itemCount: _articles.length,
-                              itemBuilder: (context, index) =>
-                                  _buildArticleCard(_articles[index]),
-                            ),
+                  ? _buildErrorState()
+                  : _articles.isEmpty
+                  ? _buildEmptyState()
+                  : ListView.builder(
+                      itemCount: _articles.length,
+                      itemBuilder: (context, index) =>
+                          _buildArticleCard(_articles[index]),
+                    ),
             ),
           ],
         ),
@@ -174,7 +193,9 @@ class _ArticlesPageState extends State<ArticlesPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF0086FF).withValues(alpha: 0.15)),
+        border: Border.all(
+          color: const Color(0xFF0086FF).withValues(alpha: 0.15),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -191,27 +212,30 @@ class _ArticlesPageState extends State<ArticlesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- ARTICLE IMAGE (if available) ---
             if (imageUrl != null)
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
                 child: Image.network(
                   imageUrl,
                   height: 160,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                  errorBuilder: (context, error, stackTrace) =>
+                      const SizedBox.shrink(),
                 ),
               ),
-
             Padding(
               padding: const EdgeInsets.all(18.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // --- SOURCE TAG ---
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF0086FF).withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(20),
@@ -227,8 +251,6 @@ class _ArticlesPageState extends State<ArticlesPage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-
-                  // --- TITLE ---
                   Text(
                     title,
                     style: const TextStyle(
@@ -241,16 +263,17 @@ class _ArticlesPageState extends State<ArticlesPage> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 14),
-
-                  // --- FOOTER ---
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: Row(
                           children: [
-                            const Icon(Icons.person_outline,
-                                size: 14, color: Color(0xFF0086FF)),
+                            const Icon(
+                              Icons.person_outline,
+                              size: 14,
+                              color: Color(0xFF0086FF),
+                            ),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
@@ -266,12 +289,12 @@ class _ArticlesPageState extends State<ArticlesPage> {
                           ],
                         ),
                       ),
-                      Row(
-                        children: const [
+                      const Row(
+                        children: [
                           Icon(Icons.access_time, size: 13, color: Colors.grey),
                           SizedBox(width: 4),
                           Text(
-                            "4 min read",
+                            '4 min read',
                             style: TextStyle(color: Colors.grey, fontSize: 12),
                           ),
                         ],
@@ -295,7 +318,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
           Icon(Icons.article_outlined, size: 60, color: Colors.grey.shade300),
           const SizedBox(height: 16),
           Text(
-            "No articles found",
+            'No articles found',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -304,7 +327,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            "Try a different search term",
+            'Try a different search term',
             style: TextStyle(fontSize: 13, color: Colors.grey.shade400),
           ),
         ],
@@ -320,7 +343,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
           Icon(Icons.wifi_off_outlined, size: 60, color: Colors.grey.shade300),
           const SizedBox(height: 16),
           Text(
-            "Couldn't load articles",
+            'Couldn\'t load articles',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -337,7 +360,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
               ),
             ),
             icon: const Icon(Icons.refresh, color: Colors.white),
-            label: const Text("Retry", style: TextStyle(color: Colors.white)),
+            label: const Text('Retry', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
