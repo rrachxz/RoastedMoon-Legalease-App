@@ -56,8 +56,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
     const String trustedDomains =
         'reuters.com,apnews.com,theverge.com,wired.com,justice.gov';
 
-    final url =
-        'https://newsapi.org/v2/everything?'
+    final url = 'https://newsapi.org/v2/everything?'
         'q=${Uri.encodeComponent(finalQuery)}'
         '&domains=$trustedDomains'
         '&language=en'
@@ -93,87 +92,93 @@ class _ArticlesPageState extends State<ArticlesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Articles',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-            color: Colors.black,
-          ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: TextField(
-                controller: _searchController,
-                onSubmitted: (value) {
-                  if (value.trim().isNotEmpty) {
-                    _fetchArticles(customQuery: value.trim());
-                  }
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search legal news...',
-                  hintStyle: TextStyle(color: Colors.grey.shade400),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: Color(0xFF0086FF),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.clear, color: Colors.grey),
-                    onPressed: () {
-                      _searchController.clear();
-                      _fetchArticles();
-                    },
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 15),
-                ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 14),
-              child: Text(
-                'Latest Legal News',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade500,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-
+            _buildHeader(),
+            _buildSearchBar(),
             Expanded(
-              child: _isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        color: Color(0xFF0086FF),
-                      ),
-                    )
-                  : _hasError
-                  ? _buildErrorState()
-                  : _articles.isEmpty
-                  ? _buildEmptyState()
-                  : ListView.builder(
-                      itemCount: _articles.length,
-                      itemBuilder: (context, index) =>
-                          _buildArticleCard(_articles[index]),
-                    ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: _isLoading
+                    ? const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF2196F3),
+                  ),
+                )
+                    : _hasError
+                    ? _buildErrorState()
+                    : _articles.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  itemCount: _articles.length,
+                  itemBuilder: (context, index) =>
+                      _buildArticleCard(_articles[index]),
+                ),
+              ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 25, 20, 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [
+          Text(
+            'Articles',
+            style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+              letterSpacing: -0.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 5, 20, 12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(28),
+        ),
+        child: TextField(
+          controller: _searchController,
+          onSubmitted: (value) {
+            if (value.trim().isNotEmpty) {
+              _fetchArticles(customQuery: value.trim());
+            }
+          },
+          decoration: InputDecoration(
+            hintText: 'Search articles...',
+            hintStyle: const TextStyle(color: Colors.black38, fontSize: 16),
+            prefixIcon: const Icon(Icons.search, color: Colors.black38),
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+              icon: const Icon(Icons.clear, color: Colors.black38),
+              onPressed: () {
+                _searchController.clear();
+                _fetchArticles();
+                setState(() {});
+              },
+            )
+                : null,
+            border: InputBorder.none,
+            contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
+          onChanged: (value) => setState(() {}),
         ),
       ),
     );
@@ -191,13 +196,13 @@ class _ArticlesPageState extends State<ArticlesPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF0086FF).withValues(alpha: 0.15),
+          color: const Color(0xFF2196F3).withOpacity(0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -218,11 +223,11 @@ class _ArticlesPageState extends State<ArticlesPage> {
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) =>
-                      const SizedBox.shrink(),
+                  const SizedBox.shrink(),
                 ),
               ),
             Padding(
-              padding: const EdgeInsets.all(18.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -232,16 +237,16 @@ class _ArticlesPageState extends State<ArticlesPage> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0086FF).withValues(alpha: 0.08),
+                      color: const Color(0xFF2196F3).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       source.toUpperCase(),
                       style: const TextStyle(
-                        color: Color(0xFF0086FF),
+                        color: Color(0xFF2196F3),
                         fontWeight: FontWeight.bold,
                         fontSize: 10,
-                        letterSpacing: 1.1,
+                        letterSpacing: 1.0,
                       ),
                     ),
                   ),
@@ -249,15 +254,16 @@ class _ArticlesPageState extends State<ArticlesPage> {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
                       height: 1.4,
+                      letterSpacing: -0.1,
                     ),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -267,15 +273,15 @@ class _ArticlesPageState extends State<ArticlesPage> {
                             const Icon(
                               Icons.person_outline,
                               size: 14,
-                              color: Color(0xFF0086FF),
+                              color: Color(0xFF2196F3),
                             ),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 author,
-                                style: const TextStyle(
-                                  color: Color(0xFF0086FF),
-                                  fontWeight: FontWeight.w600,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
                                   fontSize: 12,
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -284,13 +290,17 @@ class _ArticlesPageState extends State<ArticlesPage> {
                           ],
                         ),
                       ),
-                      const Row(
+                      Row(
                         children: [
-                          Icon(Icons.access_time, size: 13, color: Colors.grey),
-                          SizedBox(width: 4),
+                          Icon(Icons.access_time,
+                              size: 13, color: Colors.grey[500]),
+                          const SizedBox(width: 4),
                           Text(
                             '4 min read',
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -310,20 +320,20 @@ class _ArticlesPageState extends State<ArticlesPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.article_outlined, size: 60, color: Colors.grey.shade300),
-          const SizedBox(height: 16),
+          Icon(Icons.article_outlined, size: 52, color: Colors.grey[200]),
+          const SizedBox(height: 14),
           Text(
             'No articles found',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade500,
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[400],
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Try a different search term',
-            style: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+            style: TextStyle(fontSize: 13, color: Colors.grey[400]),
           ),
         ],
       ),
@@ -335,27 +345,37 @@ class _ArticlesPageState extends State<ArticlesPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.wifi_off_outlined, size: 60, color: Colors.grey.shade300),
-          const SizedBox(height: 16),
+          Icon(Icons.wifi_off_outlined, size: 52, color: Colors.grey[200]),
+          const SizedBox(height: 14),
           Text(
             'Couldn\'t load articles',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade500,
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[400],
             ),
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
             onPressed: _fetchArticles,
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0086FF),
+              backgroundColor: const Color(0xFF2196F3),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 12,
+              ),
             ),
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            label: const Text('Retry', style: TextStyle(color: Colors.white)),
+            icon: const Icon(Icons.refresh, color: Colors.white, size: 20),
+            label: const Text(
+              'Retry',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
