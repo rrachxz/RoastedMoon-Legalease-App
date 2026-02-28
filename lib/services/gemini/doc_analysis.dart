@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class DocAnalysisService {
-  static const String _apiKey = 'AIzaSyB0XLXYxmfJ2FSI6Jpebp7dZqm6E3ocZ-g';
+  static final String _apiKey = dotenv.get(
+    'GEMINI_API_KEY',
+    fallback: 'Key not found',
+  );
 
   static Future<Map<String, dynamic>> analyzeDocument(
     String filePath,

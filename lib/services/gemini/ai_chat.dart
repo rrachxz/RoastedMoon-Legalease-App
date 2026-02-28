@@ -1,7 +1,11 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AiChatService {
-  static const String _apiKey = 'AIzaSyB0XLXYxmfJ2FSI6Jpebp7dZqm6E3ocZ-g';
+  static final String _apiKey = dotenv.get(
+    'GEMINI_API_KEY',
+    fallback: 'Key not found',
+  );
 
   static Future<String> chatWithDocument(
     String fileName,
